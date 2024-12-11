@@ -6,6 +6,24 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerPawn.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FPlayerProperties
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Points;
+
+	FPlayerProperties()
+		:Name(TEXT("")), Points(0)
+	{
+
+	}
+};
 UCLASS()
 class QUIZBALL_API APlayerPawn : public APawn
 {
@@ -28,6 +46,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Points", meta = (AllowPrivateAccess = "true"))
-	int32 Points;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Properties", meta = (AllowPrivateAccess = "true"))
+	FPlayerProperties playerProperties;
 };
