@@ -33,6 +33,17 @@ enum class EQuestionDifficulty : uint8
 	EQD_MAX UMETA(DisplayName = "MAX")
 };
 
+UENUM(BlueprintType)
+enum class EQuestionHelp : uint8
+{
+	EQH_NONE UMETA(DisplayName = "None"),
+	EQH_50_50 UMETA(DisplayName = "50-50"),
+	EQH_DOUBLE_POINTS UMETA(DisplayName = "Double Points"),
+	EQH_TELEPHONE UMETA(DisplayName = "Telephone"),
+
+	EQH_MAX UMETA(DisplayName = "MAX")
+};
+
 USTRUCT(BlueprintType)
 struct FQuizballQuestionData
 {
@@ -57,14 +68,20 @@ struct FQuizballQuestionData
 	int32 Points;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Answer50_50;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isPlayed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Tries;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EQuestionHelp Help;
+
 	FQuizballQuestionData()
 		:Question(TEXT("")), Category(EQuestionCategory::EQC_NONE), Difficulty(EQuestionDifficulty::EQD_NONE), InitialAnswer(TEXT("")), Answers(),
-		Points(0), isPlayed(false), Tries(false)
+		Points(0), Answer50_50(TEXT("")), isPlayed(false), Tries(false), Help(EQuestionHelp::EQH_NONE)
 	{
 
 	}

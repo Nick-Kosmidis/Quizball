@@ -37,7 +37,7 @@ void AQuizballQuestion::LoadQuestion()
 				TArray<FString> parsedData;
 				line.ParseIntoArray(parsedData, TEXT(","), true);
 
-				if (parsedData.Num() == 5)
+				if (parsedData.Num() == 6)
 				{
 					FQuizballQuestionData newQuestion;
 					newQuestion.Category = (EQuestionCategory)FCString::Atoi(*parsedData[1]);
@@ -55,6 +55,7 @@ void AQuizballQuestion::LoadQuestion()
 						newQuestion.Tries = false;
 					}
 					newQuestion.Points = (int32)FCString::Atoi(*parsedData[4]); /*Difficulty enums are between 1-3, 1:Easy, 2:Medium, 3:Hard*/
+					newQuestion.Answer50_50 = parsedData[5];
 					newQuestion.isPlayed = false;
 
 
