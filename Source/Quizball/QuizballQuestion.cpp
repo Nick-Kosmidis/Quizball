@@ -157,6 +157,34 @@ void AQuizballQuestion::RemoveCharacter(FString& question, const char& seperateC
 	}
 }
 
+void AQuizballQuestion::SetQuestionHelp(const EQuestionHelp& help)
+{
+	CurrentQuestion.Help = help;
+}
+
+void AQuizballQuestion::SetQuestionExtraHelp(const EQuestionHelp& extraHelp)
+{
+	CurrentQuestion.ExtraHelp = extraHelp;
+}
+
+int AQuizballQuestion::CalculatePoints()
+{
+	switch (CurrentQuestion.Help)
+	{
+	case EQuestionHelp::EQH_NONE:
+		return CurrentQuestion.Points;
+	case EQuestionHelp::EQH_50_50:
+		return 1;
+	case EQuestionHelp::EQH_DOUBLE_POINTS:
+		if (CurrentQuestion.ExtraHelp == EQuestionHelp::EQH_50_50)
+			return 2;
+		else
+			return CurrentQuestion.Points * 2;
+	default:
+		return -1;
+	}
+}
+
 // Called when the game starts or when spawned
 void AQuizballQuestion::BeginPlay()
 {

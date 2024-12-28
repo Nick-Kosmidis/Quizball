@@ -18,8 +18,14 @@ struct FPlayerProperties
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Points;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Use50_50;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool UseDoublePoints;
+
 	FPlayerProperties()
-		:Name(TEXT("")), Points(0)
+		:Name(TEXT("")), Points(0), Use50_50(false), UseDoublePoints(false)
 	{
 
 	}
@@ -32,13 +38,15 @@ class QUIZBALL_API APlayerPawn : public APawn
 public:
 	// Sets default values for this pawn's properties
 	APlayerPawn();
+	
+	UFUNCTION(BlueprintCallable)
+	void AddPoints(FPlayerProperties player, const int& points);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	APlayerController* GetPlayerController() const;
-	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

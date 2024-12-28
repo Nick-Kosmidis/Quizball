@@ -27,6 +27,11 @@ APlayerController* APlayerPawn::GetPlayerController() const
 	return controller;
 }
 
+void APlayerPawn::AddPoints(FPlayerProperties player, const int& points)
+{
+	player.Points += points;
+}
+
 // Called every frame
 void APlayerPawn::Tick(float DeltaTime)
 {

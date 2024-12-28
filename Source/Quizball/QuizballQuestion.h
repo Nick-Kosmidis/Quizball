@@ -79,9 +79,13 @@ struct FQuizballQuestionData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EQuestionHelp Help;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EQuestionHelp ExtraHelp;
+
 	FQuizballQuestionData()
-		:Question(TEXT("")), Category(EQuestionCategory::EQC_NONE), Difficulty(EQuestionDifficulty::EQD_NONE), InitialAnswer(TEXT("")), Answers(),
-		Points(0), Answer50_50(TEXT("")), isPlayed(false), Tries(false), Help(EQuestionHelp::EQH_NONE)
+		:Question(TEXT("")), Category(EQuestionCategory::EQC_NONE), Difficulty(EQuestionDifficulty::EQD_NONE), 
+		InitialAnswer(TEXT("")), Answers(), Points(0), Answer50_50(TEXT("")), 
+		isPlayed(false), Tries(false), Help(EQuestionHelp::EQH_NONE), ExtraHelp(EQuestionHelp::EQH_NONE)
 	{
 
 	}
@@ -108,6 +112,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void DisableQuestion(const FQuizballQuestionData& currentQuestion);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetQuestionHelp(const EQuestionHelp& help = EQuestionHelp::EQH_NONE);
+
+	UFUNCTION(BlueprintCallable)
+	void SetQuestionExtraHelp(const EQuestionHelp& extraHelp = EQuestionHelp::EQH_NONE);
+
+	UFUNCTION(BlueprintCallable)
+	int CalculatePoints();
 
 	int32 SetMaxCharacters(const EQuestionCategory& category);
 	char SetSeperateSymbol(const EQuestionCategory& category);
