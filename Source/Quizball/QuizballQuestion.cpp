@@ -107,7 +107,7 @@ bool AQuizballQuestion::CheckAnswer(const FString& answer)
 
 	for (const FString& correctAnswer : CurrentQuestion.Answers)
 	{
-		if (correctAnswer.Contains(answer) || answer.Contains(correctAnswer) && answer.Len() > correctAnswer.Len() / 2)
+		if (correctAnswer.Contains(answer) || answer.Contains(correctAnswer))
 		{
 			return true;
 		}
@@ -183,6 +183,16 @@ int AQuizballQuestion::CalculatePoints()
 	default:
 		return -1;
 	}
+}
+
+bool AQuizballQuestion::CheckGameEnd()
+{
+	for (const auto& question : QuizballQuestions)
+	{
+		if (!question.isPlayed)
+			return false;
+	}
+	return true;
 }
 
 // Called when the game starts or when spawned

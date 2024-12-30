@@ -122,6 +122,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int CalculatePoints();
 
+	UFUNCTION(BlueprintCallable)
+	bool CheckGameEnd();
+
 	int32 SetMaxCharacters(const EQuestionCategory& category);
 	char SetSeperateSymbol(const EQuestionCategory& category);
 	void RemoveCharacter(FString& question, const char& seperateCharacter);
