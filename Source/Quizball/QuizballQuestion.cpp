@@ -107,7 +107,7 @@ bool AQuizballQuestion::CheckAnswer(const FString& answer)
 
 	for (const FString& correctAnswer : CurrentQuestion.Answers)
 	{
-		if (correctAnswer.Contains(answer) || answer.Contains(correctAnswer))
+		if (correctAnswer.Contains(answer) || answer.Contains(correctAnswer) && answer.Len() > correctAnswer.Len() / 2)
 		{
 			return true;
 		}
