@@ -16,14 +16,14 @@ AQuizballQuestion::AQuizballQuestion()
 
 void AQuizballQuestion::LoadQuestion()
 {
-	FString filePath = FPaths::ProjectConfigDir();
+	FString filePath = FPaths::ProjectContentDir();
 
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("File path: %s"), *filePath));
 	}
 
-	filePath.Append(TEXT("QuizballQuestion.txt"));
+	filePath.Append(TEXT("Data/QuizballQuestion.txt"));
 
 	IPlatformFile& FileManager = FPlatformFileManager::Get().GetPlatformFile();
 	TArray<FString> fileLines;
@@ -107,15 +107,30 @@ bool AQuizballQuestion::CheckAnswer(const FString& answer)
 
 	for (const FString& correctAnswer : CurrentQuestion.Answers)
 	{
+		int32 answerLength = answer.Len();
+		int32 correctAnswerLength = correctAnswer.Len();
+
 		if (correctAnswer.Contains(answer) || answer.Contains(correctAnswer))
 		{
-			return true;
+			if (CurrentQuestion.Category != EQuestionCategory::EQC_GUESS_THE_SCORE)
+			{
+				if (answerLength >= correctAnswerLength / 3 || correctAnswerLength >= answerLength / 3)
+				{
+					return true;
+				}
+			}
+			else
+			{
+				if (answerLength > 3)
+					return true;
+			}
+
 		}
 	}
 
-	// If no matches are found, return false
 	return false;
 }
+
 
 void AQuizballQuestion::DisableQuestion(const FQuizballQuestionData& currentQuestion)
 {
