@@ -107,30 +107,15 @@ bool AQuizballQuestion::CheckAnswer(const FString& answer)
 
 	for (const FString& correctAnswer : CurrentQuestion.Answers)
 	{
-		int32 answerLength = answer.Len();
-		int32 correctAnswerLength = correctAnswer.Len();
-
 		if (correctAnswer.Contains(answer) || answer.Contains(correctAnswer))
 		{
-			if (CurrentQuestion.Category != EQuestionCategory::EQC_GUESS_THE_SCORE)
-			{
-				if (answerLength >= correctAnswerLength / 3 || correctAnswerLength >= answerLength / 3)
-				{
-					return true;
-				}
-			}
-			else
-			{
-				if (answerLength > 3)
-					return true;
-			}
-
+			return true;
 		}
 	}
 
+	// If no matches are found, return false
 	return false;
 }
-
 
 void AQuizballQuestion::DisableQuestion(const FQuizballQuestionData& currentQuestion)
 {
