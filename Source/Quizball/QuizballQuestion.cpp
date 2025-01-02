@@ -107,9 +107,22 @@ bool AQuizballQuestion::CheckAnswer(const FString& answer)
 
 	for (const FString& correctAnswer : CurrentQuestion.Answers)
 	{
-		if (correctAnswer.Contains(answer) || answer.Contains(correctAnswer))
+		if (CurrentQuestion.Category != EQuestionCategory::EQC_GUESS_THE_SCORE)
 		{
-			return true;
+			if (answer.Len() >= correctAnswer.Len() / 3 && answer.Len() <= correctAnswer.Len())
+			{
+				if (correctAnswer.Contains(answer) || answer.Contains(correctAnswer))
+				{
+					return true;
+				}
+			}
+		}
+		else
+		{
+			if (correctAnswer.Contains(answer) || answer.Contains(correctAnswer))
+			{
+				return true;
+			}
 		}
 	}
 
