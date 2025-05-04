@@ -15,4 +15,4 @@ English rock star Elton John was twice the owner of which football club?, 6, 2, 
 UEL 2018/2019 Final Chelsea vs Arsenal, 7, 1, Chelsea 4-1 Arsenal, 1, none
 UCL 2016/2017 Quarter-finals Bayern Munich vs Real Madrid, 7, 2, Bayern Munich 1-2 Real Madrid, 2, none
 (2013–2014 Darfo Boario)>(2016–2017 Palermo)>(2017–2018 Benevento)>(2018–2021 Sassuolo)>(2021–2022 Shakhtar Donetsk)>(2022–2024 Brighton & Hove Albion)>(2024– Marseille), 8, 1, de Zerbi, 1, Luciano Spalletti
-(1998 Reading (caretaker))>(1999–2003 Reading)>(2003–2006 West Ham United)>(2006–2008 Charlton Athletic)>(2009–2010 Southampton)>(2010–2014 Newcastle United)>(2015–2016 Crystal Palace)>(2017–2018 West Bromwich Albion)>(2019–2020 ADO Den Haag)>(2022 CSKA Sofia)>(2022–2023 Aris), 8, 2, Alan Pardew, 2, Mark Hughes
+(1998 Reading (caretaker))>(1999–2003 Reading)>(2003–2006 West Ham United)>(2006–2008 Charlton Athletic)>(2009–2010 Southampton)>(2010–2014 Newcastle United)>(2015–2016 Crystal Palace)>(2017–2018 West Bromwich Albion)>(2019–2020 ADO Den Haag)>(2022 CSKA Sofia)>(2022–2023 Aris), 8, 1, Alan Pardew, 1, Mark Hughes
