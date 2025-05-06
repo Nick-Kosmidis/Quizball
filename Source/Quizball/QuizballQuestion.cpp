@@ -88,11 +88,12 @@ void AQuizballQuestion::LoadQuestion()
 
 void AQuizballQuestion::SetCurrentQuestion(const EQuestionCategory& category, const EQuestionDifficulty& difficulty)
 {
-	for (const FQuizballQuestionData& question : QuizballQuestions)
+	for (FQuizballQuestionData& question : QuizballQuestions)
 	{
 		if (question.Category == category && question.Difficulty == difficulty && !question.isPlayed)
 		{
 			CurrentQuestion = question;
+			question.isPlayed = true;
 			break;
 		}
 	}
