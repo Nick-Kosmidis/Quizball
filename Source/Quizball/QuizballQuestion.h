@@ -16,8 +16,12 @@ enum class EQuestionCategory : uint8
 	EQC_WHOS_MISSING UMETA(DisplayName = "WhosMissing"),
 	EQC_PLAYERID UMETA(DisplayName = "PlayerID"),
 	EQC_GOSSIP UMETA(DisplayName = "Gossip"),
-	EQC_GUESS_THE_SCORE UMETA(DisplayName = "GuessTheScore"),
 	EQC_MANAGERID UMETA(DisplayName = "ManagerID"),
+	EQC_GUESS_THE_SCORE UMETA(DisplayName = "GuessTheScore"),
+	EQC_HIGHER_LOWER UMETA(DisplayName = "Higher-Lower"),
+	EQC_CLUB_COMBO UMETA(DisplayName = "Club Combo"),
+	EQC_LOGO_QUIZ UMETA(DisplayName = "Logo Quiz"),
+	EQC_PHOTO_QUIZ UMETA(DisplayName = "Photo Quiz"),
 
 	EQC_MAX UMETA(DisplayName = "MAX")
 };

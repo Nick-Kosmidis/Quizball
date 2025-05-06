@@ -12,7 +12,7 @@ World Cup 2014 Final_Germany 1-0 Argentina__M. Neuer(GK)_P. Lahm(RB)_J. Boateng(
 (2012–2015 Rosenborg 2)>(2013–2015 Rosenborg)>(2015 Bodø/Glimt (loan))>(2016–2017 Groningen)>(2017–2018 Midtjylland)>(2018–2020 Crystal Palace)>(2019 Gent (loan))>(2019–2020 Trabzonspor (loan))>(2020–2023 RB Leipzig)>(2021–2023 Real Sociedad (loan))>(2023–2024 Villarreal)>(2024– Atlético Madrid), 5, 2, Alexander Sorloth, 2, Robin Le Normand 
 Which former footballer owns 30 kebab shops?, 6, 1, Lukas Podolski, 1, Bastian Schweinsteiger
 English rock star Elton John was twice the owner of which football club?, 6, 2, Watford, 2, Norwich
-UEL 2018/2019 Final Chelsea vs Arsenal, 7, 1, Chelsea 4-1 Arsenal, 1, none
-UCL 2016/2017 Quarter-finals Bayern Munich vs Real Madrid, 7, 2, Bayern Munich 1-2 Real Madrid, 2, none
-(2013–2014 Darfo Boario)>(2016–2017 Palermo)>(2017–2018 Benevento)>(2018–2021 Sassuolo)>(2021–2022 Shakhtar Donetsk)>(2022–2024 Brighton & Hove Albion)>(2024– Marseille), 8, 1, de Zerbi, 1, Luciano Spalletti
-(1998 Reading (caretaker))>(1999–2003 Reading)>(2003–2006 West Ham United)>(2006–2008 Charlton Athletic)>(2009–2010 Southampton)>(2010–2014 Newcastle United)>(2015–2016 Crystal Palace)>(2017–2018 West Bromwich Albion)>(2019–2020 ADO Den Haag)>(2022 CSKA Sofia)>(2022–2023 Aris), 8, 1, Alan Pardew, 1, Mark Hughes
+(2013–2014 Darfo Boario)>(2016–2017 Palermo)>(2017–2018 Benevento)>(2018–2021 Sassuolo)>(2021–2022 Shakhtar Donetsk)>(2022–2024 Brighton & Hove Albion)>(2024– Marseille), 7, 1, de Zerbi, 1, Luciano Spalletti
+(1998 Reading (caretaker))>(1999–2003 Reading)>(2003–2006 West Ham United)>(2006–2008 Charlton Athletic)>(2009–2010 Southampton)>(2010–2014 Newcastle United)>(2015–2016 Crystal Palace)>(2017–2018 West Bromwich Albion)>(2019–2020 ADO Den Haag)>(2022 CSKA Sofia)>(2022–2023 Aris), 7, 1, Alan Pardew, 1, Mark Hughes
+UEL 2018/2019 Final Chelsea vs Arsenal, 8, 1, Chelsea 4-1 Arsenal, 1, none
+UCL 2016/2017 Quarter-finals Bayern Munich vs Real Madrid, 8, 2, Bayern Munich 1-2 Real Madrid, 2, none
