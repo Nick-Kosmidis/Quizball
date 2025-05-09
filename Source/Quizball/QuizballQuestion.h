@@ -129,6 +129,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool CheckGameEnd();
 
+	UFUNCTION(BlueprintCallable)
+	void HandleQuestions(FString answer);
+
+	UFUNCTION(BlueprintCallable)
+	int HandleSimpleQuestion(FString answer);
+
+	UFUNCTION(BlueprintCallable)
+	void HandleTopQuestion(FString answer);
+
 	int32 SetMaxCharacters(const EQuestionCategory& category);
 	char SetSeperateSymbol(const EQuestionCategory& category);
 	void RemoveCharacter(FString& question, const char& seperateCharacter);
@@ -143,8 +152,11 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Question", meta = (AllowPrivateAccess = "true"))
-	TArray<FQuizballQuestionData> QuizballQuestions;
+	TArray<FQuizballQuestionData> m_QuizballQuestions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Question", meta = (AllowPrivateAccess = "true"))
-	FQuizballQuestionData CurrentQuestion;
+	FQuizballQuestionData m_CurrentQuestion;
+
+	USoundBase* m_CorrectAnswerSound;
+	USoundBase* m_WrongAnswerSound;
 };

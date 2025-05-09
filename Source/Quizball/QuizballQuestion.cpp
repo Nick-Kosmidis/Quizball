@@ -3,12 +3,16 @@
 
 #include "QuizballQuestion.h"
 #include "Misc/FileHelper.h"
+#include "QuizballGameInstance.h"
 #include "Engine.h"
 
 // Sets default values
 AQuizballQuestion::AQuizballQuestion()
-	:CurrentQuestion(FQuizballQuestionData())
+	:m_CurrentQuestion(FQuizballQuestionData())
 {
+	m_CorrectAnswerSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sounds/CorrectAnswer_Cue"));
+	m_WrongAnswerSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sounds/WrongAnswer_Cue"));
+
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -64,7 +68,7 @@ void AQuizballQuestion::LoadQuestion()
 					newQuestion.Question = SeperateQuestionIntoLines(parsedData[0], maxCharacters, seperateSymbol);
 					RemoveSpacesFromStart(newQuestion.Answers);
 
-					QuizballQuestions.Add(newQuestion);
+					m_QuizballQuestions.Add(newQuestion);
 				}
 				else
 				{
@@ -88,11 +92,11 @@ void AQuizballQuestion::LoadQuestion()
 
 void AQuizballQuestion::SetCurrentQuestion(const EQuestionCategory& category, const EQuestionDifficulty& difficulty)
 {
-	for (FQuizballQuestionData& question : QuizballQuestions)
+	for (FQuizballQuestionData& question : m_QuizballQuestions)
 	{
 		if (question.Category == category && question.Difficulty == difficulty && !question.isPlayed)
 		{
-			CurrentQuestion = question;
+			m_CurrentQuestion = question;
 			question.isPlayed = true;
 			break;
 		}
@@ -106,9 +110,9 @@ bool AQuizballQuestion::CheckAnswer(const FString& answer)
 		return false;
 	}
 
-	for (const FString& correctAnswer : CurrentQuestion.Answers)
+	for (const FString& correctAnswer : m_CurrentQuestion.Answers)
 	{
-		if (CurrentQuestion.Category != EQuestionCategory::EQC_GUESS_THE_SCORE)
+		if (m_CurrentQuestion.Category != EQuestionCategory::EQC_GUESS_THE_SCORE)
 		{
 			if (answer.Len() >= correctAnswer.Len() / 3 && answer.Len() <= correctAnswer.Len())
 			{
@@ -133,7 +137,7 @@ bool AQuizballQuestion::CheckAnswer(const FString& answer)
 
 void AQuizballQuestion::DisableQuestion(const FQuizballQuestionData& currentQuestion)
 {
-	for (auto& question : QuizballQuestions)
+	for (auto& question : m_QuizballQuestions)
 	{
 		if (question.Question == currentQuestion.Question)
 		{
@@ -173,27 +177,27 @@ void AQuizballQuestion::RemoveCharacter(FString& question, const char& seperateC
 
 void AQuizballQuestion::SetQuestionHelp(const EQuestionHelp& help)
 {
-	CurrentQuestion.Help = help;
+	m_CurrentQuestion.Help = help;
 }
 
 void AQuizballQuestion::SetQuestionExtraHelp(const EQuestionHelp& extraHelp)
 {
-	CurrentQuestion.ExtraHelp = extraHelp;
+	m_CurrentQuestion.ExtraHelp = extraHelp;
 }
 
 int AQuizballQuestion::CalculatePoints()
 {
-	switch (CurrentQuestion.Help)
+	switch (m_CurrentQuestion.Help)
 	{
 	case EQuestionHelp::EQH_NONE:
-		return CurrentQuestion.Points;
+		return m_CurrentQuestion.Points;
 	case EQuestionHelp::EQH_50_50:
 		return 1;
 	case EQuestionHelp::EQH_DOUBLE_POINTS:
-		if (CurrentQuestion.ExtraHelp == EQuestionHelp::EQH_50_50)
+		if (m_CurrentQuestion.ExtraHelp == EQuestionHelp::EQH_50_50)
 			return 2;
 		else
-			return CurrentQuestion.Points * 2;
+			return m_CurrentQuestion.Points * 2;
 	default:
 		return -1;
 	}
@@ -201,12 +205,47 @@ int AQuizballQuestion::CalculatePoints()
 
 bool AQuizballQuestion::CheckGameEnd()
 {
-	for (const auto& question : QuizballQuestions)
+	for (const auto& question : m_QuizballQuestions)
 	{
 		if (!question.isPlayed)
 			return false;
 	}
 	return true;
+}
+
+void AQuizballQuestion::HandleQuestions(FString answer)
+{
+	switch (m_CurrentQuestion.Category)
+	{
+	case EQuestionCategory::EQC_TOP5:
+		HandleTopQuestion(answer);
+		break;
+	default:
+		HandleSimpleQuestion(answer);
+		break;
+	}
+}
+
+int AQuizballQuestion::HandleSimpleQuestion(FString answer)
+{
+	if (CheckAnswer(answer))
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), m_CorrectAnswerSound);
+		int32 points = CalculatePoints();
+
+		return points;
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), m_WrongAnswerSound);
+		return 0;
+	}
+
+	return 0;
+}
+
+void AQuizballQuestion::HandleTopQuestion(FString answer)
+{
 }
 
 // Called when the game starts or when spawned
