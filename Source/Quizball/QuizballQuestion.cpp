@@ -8,7 +8,7 @@
 
 // Sets default values
 AQuizballQuestion::AQuizballQuestion()
-	:m_CurrentQuestion(FQuizballQuestionData())
+	:m_CurrentQuestion(FQuizballQuestionData()), m_Top5Counter(0), m_WrongAnswerTries(0)
 {
 	m_CorrectAnswerSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sounds/CorrectAnswer_Cue"));
 	m_WrongAnswerSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sounds/WrongAnswer_Cue"));
@@ -187,20 +187,54 @@ void AQuizballQuestion::SetQuestionExtraHelp(const EQuestionHelp& extraHelp)
 
 int AQuizballQuestion::CalculatePoints()
 {
-	switch (m_CurrentQuestion.Help)
+	if (m_CurrentQuestion.Category != EQuestionCategory::EQC_TOP5)
 	{
-	case EQuestionHelp::EQH_NONE:
-		return m_CurrentQuestion.Points;
-	case EQuestionHelp::EQH_50_50:
-		return 1;
-	case EQuestionHelp::EQH_DOUBLE_POINTS:
-		if (m_CurrentQuestion.ExtraHelp == EQuestionHelp::EQH_50_50)
-			return 2;
-		else
-			return m_CurrentQuestion.Points * 2;
-	default:
-		return -1;
+		switch (m_CurrentQuestion.Help)
+		{
+		case EQuestionHelp::EQH_NONE:
+			return m_CurrentQuestion.Points;
+		case EQuestionHelp::EQH_50_50:
+			return 1;
+		case EQuestionHelp::EQH_DOUBLE_POINTS:
+			if (m_CurrentQuestion.ExtraHelp == EQuestionHelp::EQH_50_50)
+				return 2;
+			else
+				return m_CurrentQuestion.Points * 2;
+		default:
+			return -1;
+		}
 	}
+	else
+	{
+		if (m_Top5Counter == 5)
+		{
+			ResetTop5Properties();
+			switch (m_CurrentQuestion.Help)
+			{
+			case EQuestionHelp::EQH_NONE:
+				return m_CurrentQuestion.Points;
+			case EQuestionHelp::EQH_DOUBLE_POINTS:
+					return m_CurrentQuestion.Points * 2;
+			default:
+				return -1;
+			}
+		}
+		else if (m_Top5Counter == 4)
+		{
+			ResetTop5Properties();
+			switch (m_CurrentQuestion.Help)
+			{
+			case EQuestionHelp::EQH_NONE:
+				return 2;
+			case EQuestionHelp::EQH_DOUBLE_POINTS:
+				return 4;
+			default:
+				return -1;
+			}
+		}
+	}
+
+	return -1;
 }
 
 bool AQuizballQuestion::CheckGameEnd()
@@ -213,12 +247,12 @@ bool AQuizballQuestion::CheckGameEnd()
 	return true;
 }
 
-void AQuizballQuestion::HandleQuestions(FString answer)
+void AQuizballQuestion::HandleQuestions(const FString& answer)
 {
 	switch (m_CurrentQuestion.Category)
 	{
 	case EQuestionCategory::EQC_TOP5:
-		HandleTopQuestion(answer);
+		HandleTop5Question(answer);
 		break;
 	default:
 		HandleSimpleQuestion(answer);
@@ -244,8 +278,26 @@ int AQuizballQuestion::HandleSimpleQuestion(FString answer)
 	return 0;
 }
 
-void AQuizballQuestion::HandleTopQuestion(FString answer)
+int AQuizballQuestion::HandleTop5Question(FString answer)
 {
+	int32 correctAnswerIndex = -1;
+	if (CheckAnswer(answer))
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), m_CorrectAnswerSound);
+		m_Top5Counter++;
+		correctAnswerIndex = FindAnswerByIndex(answer);
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), m_WrongAnswerSound);
+		m_WrongAnswerTries++;
+		if (m_WrongAnswerTries > 1)
+		{
+			m_CurrentQuestion.Tries = false;
+		}
+	}
+
+	return correctAnswerIndex;
 }
 
 // Called when the game starts or when spawned
@@ -295,6 +347,24 @@ void AQuizballQuestion::RemoveSpacesFromStart(TArray<FString>& answers)
 	{
 		answer.RemoveFromStart(TEXT(" "));
 	}
+}
+
+int32 AQuizballQuestion::FindAnswerByIndex(const FString& answer)
+{
+	for (int32 i = 0; i < m_CurrentQuestion.Answers.Num(); i++)
+	{
+		if (m_CurrentQuestion.Answers[i].Contains(answer) || answer.Contains(m_CurrentQuestion.Answers[i]))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+void AQuizballQuestion::ResetTop5Properties()
+{
+	m_Top5Counter = 0;
+	m_WrongAnswerTries = 0;
 }
 
 

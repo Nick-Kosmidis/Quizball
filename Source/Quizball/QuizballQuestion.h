@@ -130,14 +130,17 @@ public:
 	bool CheckGameEnd();
 
 	UFUNCTION(BlueprintCallable)
-	void HandleQuestions(FString answer);
+	void HandleQuestions(const FString& answer);
 
 	UFUNCTION(BlueprintCallable)
 	int HandleSimpleQuestion(FString answer);
 
 	UFUNCTION(BlueprintCallable)
-	void HandleTopQuestion(FString answer);
+	int HandleTop5Question(FString answer);
 
+	UFUNCTION(BlueprintCallable)
+	void ResetTop5Properties();
+	
 	int32 SetMaxCharacters(const EQuestionCategory& category);
 	char SetSeperateSymbol(const EQuestionCategory& category);
 	void RemoveCharacter(FString& question, const char& seperateCharacter);
@@ -146,6 +149,7 @@ protected:
 	virtual void BeginPlay() override;
 	FString SeperateQuestionIntoLines(const FString& question, const int32 maxCharactersALine, const char& seperateSymbol);
 	void RemoveSpacesFromStart(TArray<FString>& answers);
+	int32 FindAnswerByIndex(const FString& answer);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -157,6 +161,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Question", meta = (AllowPrivateAccess = "true"))
 	FQuizballQuestionData m_CurrentQuestion;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Top 5", meta = (AllowPrivateAccess = "true"))
+	int32 m_Top5Counter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Top 5", meta = (AllowPrivateAccess = "true"))
+	int32 m_WrongAnswerTries;
+	
 	USoundBase* m_CorrectAnswerSound;
 	USoundBase* m_WrongAnswerSound;
 };
