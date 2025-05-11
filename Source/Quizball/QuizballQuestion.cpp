@@ -5,6 +5,7 @@
 #include "Misc/FileHelper.h"
 #include "QuizballGameInstance.h"
 #include "Engine.h"
+#include "Algo/RandomShuffle.h"
 
 // Sets default values
 AQuizballQuestion::AQuizballQuestion()
@@ -21,13 +22,7 @@ AQuizballQuestion::AQuizballQuestion()
 void AQuizballQuestion::LoadQuestion()
 {
 	FString filePath = FPaths::ProjectContentDir();
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("File path: %s"), *filePath));
-	}
-
-	filePath.Append(TEXT("Data/QuizballQuestion.txt"));
+	filePath.Append(TEXT("Data/QuizballQuestions.csv"));
 
 	IPlatformFile& FileManager = FPlatformFileManager::Get().GetPlatformFile();
 	TArray<FString> fileLines;
@@ -36,7 +31,7 @@ void AQuizballQuestion::LoadQuestion()
 	{
 		if (FFileHelper::LoadFileToStringArray(fileLines, *filePath))
 		{
-			for (const FString& line : fileLines)
+			for (FString line : fileLines)
 			{
 				TArray<FString> parsedData;
 				line.ParseIntoArray(parsedData, TEXT(","), true);
@@ -46,53 +41,75 @@ void AQuizballQuestion::LoadQuestion()
 					FQuizballQuestionData newQuestion;
 					newQuestion.Category = (EQuestionCategory)FCString::Atoi(*parsedData[1]);
 					newQuestion.Difficulty = (EQuestionDifficulty)FCString::Atoi(*parsedData[2]);
-					newQuestion.InitialAnswer = parsedData[3];
+
 					if (newQuestion.Category == EQuestionCategory::EQC_TOP5)
 					{
-						newQuestion.InitialAnswer = parsedData[3];
-						newQuestion.InitialAnswer.ParseIntoArray(newQuestion.Answers, TEXT("-"), true);
+						parsedData[3].ParseIntoArray(newQuestion.Answers, TEXT("-"), true);
 						newQuestion.Tries = true;
+					}
+					else if (newQuestion.Category == EQuestionCategory::EQC_GUESS_THE_SCORE)
+					{
+						TArray<FString> scoreAndScorers;
+						parsedData[3].ParseIntoArray(scoreAndScorers, TEXT(">"), true);
+
+						if (scoreAndScorers.Num() >= 2)
+						{
+							FString score = scoreAndScorers[0].Replace(TEXT("Score:"), TEXT("")).TrimStartAndEnd();
+							newQuestion.Answers.Add(score);
+							FString scorersStr = scoreAndScorers[1].Replace(TEXT("Score:"), TEXT("")).TrimStartAndEnd();
+							TArray<FString> scorers;
+							scorersStr.ParseIntoArray(scorers, TEXT("-"), true);
+
+							for (FString& scorer : scorers)
+							{
+								newQuestion.Answers.Add(scorer);
+							}
+						}
+						newQuestion.Tries = false;
 					}
 					else
 					{
 						newQuestion.Answers.Add(parsedData[3]);
 						newQuestion.Tries = false;
 					}
-					newQuestion.Points = (int32)FCString::Atoi(*parsedData[4]); /*Difficulty enums are between 1-3, 1:Easy, 2:Medium, 3:Hard*/
+
+					newQuestion.InitialAnswer = parsedData[3];
+					newQuestion.Points = FCString::Atoi(*parsedData[4]);
 					newQuestion.Answer50_50 = parsedData[5];
 					newQuestion.isPlayed = false;
 
-
 					int32 maxCharacters = SetMaxCharacters(newQuestion.Category);
-					char seperateSymbol = SetSeperateSymbol(newQuestion.Category);
-					newQuestion.Question = SeperateQuestionIntoLines(parsedData[0], maxCharacters, seperateSymbol);
+					char separateSymbol = SetSeperateSymbol(newQuestion.Category);
+					newQuestion.Question = SeperateQuestionIntoLines(parsedData[0], maxCharacters, separateSymbol);
 					RemoveSpacesFromStart(newQuestion.Answers);
 
 					m_QuizballQuestions.Add(newQuestion);
 				}
 				else
 				{
-					if (GEngine)
-						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Wrong question format.There are %d, Question: %s"), 
-							parsedData.Num(), *parsedData[0]));
+					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,
+						FString::Printf(TEXT("Wrong format: %d fields. Line: %s"), parsedData.Num(), *line));
 				}
 			}
 		}
 		else
 		{
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Magenta, FString::Printf(TEXT("Fail to load the questions")));
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Magenta, TEXT("Failed to load file."));
 		}
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Black, FString::Printf(TEXT("File doesn't exists")));
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Black, TEXT("File does not exist."));
 	}
+	if(GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Black,
+			FString::Printf(TEXT("Total questions: %d "), m_QuizballQuestions.Num()));
 }
+
 
 void AQuizballQuestion::SetCurrentQuestion(const EQuestionCategory& category, const EQuestionDifficulty& difficulty)
 {
-	for (FQuizballQuestionData& question : m_QuizballQuestions)
+	for (FQuizballQuestionData& question : m_SelectedQuestions)
 	{
 		if (question.Category == category && question.Difficulty == difficulty && !question.isPlayed)
 		{
@@ -135,6 +152,48 @@ bool AQuizballQuestion::CheckAnswer(const FString& answer)
 	return false;
 }
 
+bool AQuizballQuestion::CheckGuessAnswer(const FString& answer1, const FString& answer2, bool& correctScore, bool& correctScorers)
+{
+	if (answer1.IsEmpty() || !m_CurrentQuestion.Answers[0].Equals(answer1, ESearchCase::IgnoreCase))
+	{
+		correctScore = false;
+	}
+	else
+	{
+		correctScore = true;
+	}
+
+	TArray<FString> scorers;
+	answer2.ParseIntoArray(scorers, TEXT("-"));
+
+	for (FString& scorer : scorers)
+	{
+		scorer = scorer.TrimStartAndEnd();
+	}
+
+	TSet<FString> correctAnswers;
+	TSet<FString> givenScorers;
+
+	for (int32 i = 1; i < m_CurrentQuestion.Answers.Num(); i++)
+	{
+		correctAnswers.Add(m_CurrentQuestion.Answers[i].ToLower());
+	}
+
+	for (const FString& scorer : scorers)
+	{
+		givenScorers.Add(scorer.ToLower());
+	}
+
+	if (correctAnswers.Num() != givenScorers.Num())
+	{
+		correctScorers = false;
+	}
+
+	correctScorers = correctAnswers.Includes(givenScorers);
+
+	return correctScore || correctScorers;
+}
+
 void AQuizballQuestion::DisableQuestion(const FQuizballQuestionData& currentQuestion)
 {
 	for (auto& question : m_QuizballQuestions)
@@ -151,7 +210,7 @@ int32 AQuizballQuestion::SetMaxCharacters(const EQuestionCategory& category)
 	if (category == EQuestionCategory::EQC_MANAGERID || category == EQuestionCategory::EQC_PLAYERID || category == EQuestionCategory::EQC_WHOS_MISSING)
 		return 40;
 	else
-		return 60;
+		return 50;
 }
 
 char AQuizballQuestion::SetSeperateSymbol(const EQuestionCategory& category)
@@ -173,6 +232,84 @@ void AQuizballQuestion::RemoveCharacter(FString& question, const char& seperateC
 			question[i] = ' ';
 		}
 	}
+}
+
+void AQuizballQuestion::SelectRandomQuestions()
+{
+	TArray<FQuizballQuestionData> selectedQuestions;
+	TSet<FString> alreadySelectedQuestions;
+
+	// Λίστα με όλες τις απαιτήσεις ανά κατηγορία και δυσκολία
+	struct FSelectionCriteria
+	{
+		EQuestionCategory Category;
+		EQuestionDifficulty Difficulty;
+		int32 Count;
+	};
+
+	TArray<FSelectionCriteria> criteria = 
+	{
+		{EQuestionCategory::EQC_HISTORY, EQuestionDifficulty::EQD_EASY, 1},
+		{EQuestionCategory::EQC_HISTORY, EQuestionDifficulty::EQD_MEDIUM, 1},
+		{EQuestionCategory::EQC_HISTORY, EQuestionDifficulty::EQD_HARD, 1},
+
+		{EQuestionCategory::EQC_GEOGRAPHY, EQuestionDifficulty::EQD_EASY, 1},
+		{EQuestionCategory::EQC_GEOGRAPHY, EQuestionDifficulty::EQD_MEDIUM, 1},
+		{EQuestionCategory::EQC_GEOGRAPHY, EQuestionDifficulty::EQD_HARD, 1},
+
+		{EQuestionCategory::EQC_TOP5, EQuestionDifficulty::EQD_HARD, 2},
+		{EQuestionCategory::EQC_WHOS_MISSING, EQuestionDifficulty::EQD_HARD, 2},
+
+		{EQuestionCategory::EQC_PLAYERID, EQuestionDifficulty::EQD_MEDIUM, 2},
+
+		{EQuestionCategory::EQC_GOSSIP, EQuestionDifficulty::EQD_EASY, 1},
+		{EQuestionCategory::EQC_GOSSIP, EQuestionDifficulty::EQD_MEDIUM, 1},
+
+		{EQuestionCategory::EQC_MANAGERID, EQuestionDifficulty::EQD_EASY, 2},
+
+		{EQuestionCategory::EQC_GUESS_THE_SCORE, EQuestionDifficulty::EQD_EASY, 2},
+	};
+
+	for(const FSelectionCriteria& criterion : criteria)
+	{
+		TArray<FQuizballQuestionData> FilteredQuestions;
+
+		for (const FQuizballQuestionData& question : m_QuizballQuestions)
+		{
+			if (question.Category == criterion.Category &&
+				question.Difficulty == criterion.Difficulty &&
+				!question.isPlayed && !alreadySelectedQuestions.Contains(question.Question))
+			{
+				FilteredQuestions.Add(question);
+			}
+		}
+
+		/*FilteredQuestions.Sort([](const FQuizballQuestionData&, const FQuizballQuestionData&)
+		{
+			return FMath::RandBool(); // Random sort
+		});*/
+
+		Algo::RandomShuffle(FilteredQuestions);
+
+		for (int32 i = 0; i < criterion.Count && i < FilteredQuestions.Num(); i++)
+		{
+			const FQuizballQuestionData& Selected = FilteredQuestions[i];
+			selectedQuestions.Add(Selected);
+			alreadySelectedQuestions.Add(Selected.Question);
+
+			for (FQuizballQuestionData& q : m_QuizballQuestions)
+			{
+				if (q.Question == FilteredQuestions[i].Question)
+				{
+					q.isPlayed = true;
+					break;
+				}
+			}
+		}
+	}
+
+	m_SelectedQuestions = selectedQuestions;
+
 }
 
 void AQuizballQuestion::SetQuestionHelp(const EQuestionHelp& help)
@@ -235,6 +372,16 @@ int AQuizballQuestion::CalculatePoints()
 	}
 
 	return -1;
+}
+
+int AQuizballQuestion::CalculateGuessTheScorePoints(bool correctScore, bool correctScorers)
+{
+	if (!correctScore)
+		return 0;
+	else if (correctScore && !correctScorers)
+		return 1;
+	else
+		return 2;
 }
 
 bool AQuizballQuestion::CheckGameEnd()
@@ -300,11 +447,29 @@ int AQuizballQuestion::HandleTop5Question(FString answer)
 	return correctAnswerIndex;
 }
 
+int AQuizballQuestion::HandleGuessTheScoreQuestion(const FString& score, const FString& scorers)
+{
+	if (CheckGuessAnswer(score, scorers, bCorrectScore, bCorrectScorers))
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), m_CorrectAnswerSound);
+		int32 points = CalculateGuessTheScorePoints(bCorrectScore, bCorrectScorers);
+
+		return points;
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), m_WrongAnswerSound);
+		return 0;
+	}
+}
+
 // Called when the game starts or when spawned
 void AQuizballQuestion::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	LoadQuestion();
+	SelectRandomQuestions();
 }
 
 FString AQuizballQuestion::SeperateQuestionIntoLines(const FString& question, const int32 maxCharactersALine, const char& seperateSymbol)

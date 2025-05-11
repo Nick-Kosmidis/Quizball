@@ -86,6 +86,9 @@ struct FQuizballQuestionData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EQuestionHelp ExtraHelp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* Image;
+
 	FQuizballQuestionData()
 		:Question(TEXT("")), Category(EQuestionCategory::EQC_NONE), Difficulty(EQuestionDifficulty::EQD_NONE), 
 		InitialAnswer(TEXT("")), Answers(), Points(0), Answer50_50(TEXT("")), 
@@ -114,6 +117,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool CheckAnswer(const FString& answer);
 
+	/*Specified for GuessTheScore category*/
+	UFUNCTION(BlueprintCallable)
+	bool CheckGuessAnswer(const FString& answer1, const FString& answer2, bool& correctScore, bool& correctScorers);
+
 	UFUNCTION(BlueprintCallable)
 	void DisableQuestion(const FQuizballQuestionData& currentQuestion);
 	
@@ -125,6 +132,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int CalculatePoints();
+
+	int CalculateGuessTheScorePoints(bool correctScore, bool correctScorers);
 
 	UFUNCTION(BlueprintCallable)
 	bool CheckGameEnd();
@@ -139,7 +148,13 @@ public:
 	int HandleTop5Question(FString answer);
 
 	UFUNCTION(BlueprintCallable)
+	int HandleGuessTheScoreQuestion(const FString& score, const FString& scorers);
+
+	UFUNCTION(BlueprintCallable)
 	void ResetTop5Properties();
+	
+	UFUNCTION(BlueprintCallable)
+	void SelectRandomQuestions();
 	
 	int32 SetMaxCharacters(const EQuestionCategory& category);
 	char SetSeperateSymbol(const EQuestionCategory& category);
@@ -159,6 +174,9 @@ private:
 	TArray<FQuizballQuestionData> m_QuizballQuestions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Question", meta = (AllowPrivateAccess = "true"))
+	TArray<FQuizballQuestionData> m_SelectedQuestions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Question", meta = (AllowPrivateAccess = "true"))
 	FQuizballQuestionData m_CurrentQuestion;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Top 5", meta = (AllowPrivateAccess = "true"))
@@ -169,4 +187,7 @@ private:
 	
 	USoundBase* m_CorrectAnswerSound;
 	USoundBase* m_WrongAnswerSound;
+
+	bool bCorrectScore = false;
+	bool bCorrectScorers = false;
 };
