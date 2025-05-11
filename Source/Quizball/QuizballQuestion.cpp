@@ -380,8 +380,9 @@ int AQuizballQuestion::CalculateGuessTheScorePoints(bool correctScore, bool corr
 		return 0;
 	else if (correctScore && !correctScorers)
 		return 1;
-	else
+	else if(correctScore && correctScorers)
 		return 2;
+	return 0;
 }
 
 bool AQuizballQuestion::CheckGameEnd()
