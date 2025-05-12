@@ -56,7 +56,7 @@ void AQuizballQuestion::LoadQuestion()
 						{
 							FString score = scoreAndScorers[0].Replace(TEXT("Score:"), TEXT("")).TrimStartAndEnd();
 							newQuestion.Answers.Add(score);
-							FString scorersStr = scoreAndScorers[1].Replace(TEXT("Score:"), TEXT("")).TrimStartAndEnd();
+							FString scorersStr = scoreAndScorers[1].Replace(TEXT("Scorers:"), TEXT("")).TrimStartAndEnd();
 							TArray<FString> scorers;
 							scorersStr.ParseIntoArray(scorers, TEXT("-"), true);
 
@@ -152,46 +152,30 @@ bool AQuizballQuestion::CheckAnswer(const FString& answer)
 	return false;
 }
 
-bool AQuizballQuestion::CheckGuessAnswer(const FString& answer1, const FString& answer2, bool& correctScore, bool& correctScorers)
+bool AQuizballQuestion::CheckGuessAnswer(const FString& answer1, const FString& answer2)
 {
-	if (answer1.IsEmpty() || !m_CurrentQuestion.Answers[0].Equals(answer1, ESearchCase::IgnoreCase))
-	{
-		correctScore = false;
-	}
-	else
-	{
-		correctScore = true;
-	}
 
-	TArray<FString> scorers;
-	answer2.ParseIntoArray(scorers, TEXT("-"));
+	bCorrectScore = !answer1.IsEmpty() && m_CurrentQuestion.Answers[0].Equals(answer1, ESearchCase::IgnoreCase);
 
-	for (FString& scorer : scorers)
-	{
-		scorer = scorer.TrimStartAndEnd();
-	}
-
-	TSet<FString> correctAnswers;
-	TSet<FString> givenScorers;
-
+	TArray<FString> correctScorers;
 	for (int32 i = 1; i < m_CurrentQuestion.Answers.Num(); i++)
 	{
-		correctAnswers.Add(m_CurrentQuestion.Answers[i].ToLower());
+		FString scorer = m_CurrentQuestion.Answers[i].TrimStartAndEnd().ToLower();
+		correctScorers.Add(scorer);
 	}
+	correctScorers.Sort();
 
-	for (const FString& scorer : scorers)
+	TArray<FString> playerScorers;
+	answer2.ParseIntoArray(playerScorers, TEXT(","));
+	for (FString& s : playerScorers)
 	{
-		givenScorers.Add(scorer.ToLower());
+		s = s.TrimStartAndEnd().ToLower();
 	}
+	playerScorers.Sort();
 
-	if (correctAnswers.Num() != givenScorers.Num())
-	{
-		correctScorers = false;
-	}
+	bCorrectScorers = correctScorers == playerScorers;
 
-	correctScorers = correctAnswers.Includes(givenScorers);
-
-	return correctScore || correctScorers;
+	return bCorrectScore || bCorrectScorers;
 }
 
 void AQuizballQuestion::DisableQuestion(const FQuizballQuestionData& currentQuestion)
@@ -247,7 +231,7 @@ void AQuizballQuestion::SelectRandomQuestions()
 		int32 Count;
 	};
 
-	TArray<FSelectionCriteria> criteria = 
+	TArray<FSelectionCriteria> criteria =
 	{
 		{EQuestionCategory::EQC_HISTORY, EQuestionDifficulty::EQD_EASY, 1},
 		{EQuestionCategory::EQC_HISTORY, EQuestionDifficulty::EQD_MEDIUM, 1},
@@ -270,7 +254,7 @@ void AQuizballQuestion::SelectRandomQuestions()
 		{EQuestionCategory::EQC_GUESS_THE_SCORE, EQuestionDifficulty::EQD_EASY, 2},
 	};
 
-	for(const FSelectionCriteria& criterion : criteria)
+	for (const FSelectionCriteria& criterion : criteria)
 	{
 		TArray<FQuizballQuestionData> FilteredQuestions;
 
@@ -309,7 +293,6 @@ void AQuizballQuestion::SelectRandomQuestions()
 	}
 
 	m_SelectedQuestions = selectedQuestions;
-
 }
 
 void AQuizballQuestion::SetQuestionHelp(const EQuestionHelp& help)
@@ -378,11 +361,23 @@ int AQuizballQuestion::CalculateGuessTheScorePoints(bool correctScore, bool corr
 {
 	if (!correctScore)
 		return 0;
-	else if (correctScore && !correctScorers)
-		return 1;
-	else if(correctScore && correctScorers)
-		return 2;
-	return 0;
+	else
+	{
+		int32 guessPoints = 0;
+		if (correctScorers)
+			guessPoints = 2;
+		else
+			guessPoints = 1;
+
+		if(m_CurrentQuestion.Help == EQuestionHelp::EQH_DOUBLE_POINTS)
+		{
+			return 2 * guessPoints;
+		}
+		else
+		{
+			return guessPoints;
+		}
+	}
 }
 
 bool AQuizballQuestion::CheckGameEnd()
@@ -450,7 +445,7 @@ int AQuizballQuestion::HandleTop5Question(FString answer)
 
 int AQuizballQuestion::HandleGuessTheScoreQuestion(const FString& score, const FString& scorers)
 {
-	if (CheckGuessAnswer(score, scorers, bCorrectScore, bCorrectScorers))
+	if (CheckGuessAnswer(score, scorers))
 	{
 		UGameplayStatics::PlaySound2D(GetWorld(), m_CorrectAnswerSound);
 		int32 points = CalculateGuessTheScorePoints(bCorrectScore, bCorrectScorers);

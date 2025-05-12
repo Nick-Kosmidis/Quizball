@@ -119,7 +119,7 @@ public:
 
 	/*Specified for GuessTheScore category*/
 	UFUNCTION(BlueprintCallable)
-	bool CheckGuessAnswer(const FString& answer1, const FString& answer2, bool& correctScore, bool& correctScorers);
+	bool CheckGuessAnswer(const FString& answer1, const FString& answer2);
 
 	UFUNCTION(BlueprintCallable)
 	void DisableQuestion(const FQuizballQuestionData& currentQuestion);
@@ -188,6 +188,9 @@ private:
 	USoundBase* m_CorrectAnswerSound;
 	USoundBase* m_WrongAnswerSound;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Guess The Score", meta = (AllowPrivateAccess = "true"))
 	bool bCorrectScore = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Guess The Score", meta = (AllowPrivateAccess = "true"))
 	bool bCorrectScorers = false;
 };
