@@ -80,9 +80,19 @@ void AQuizballQuestion::LoadQuestion()
 
 					int32 maxCharacters = SetMaxCharacters(newQuestion.Category);
 					char separateSymbol = SetSeperateSymbol(newQuestion.Category);
-					newQuestion.Question = SeperateQuestionIntoLines(parsedData[0], maxCharacters, separateSymbol);
-					RemoveSpacesFromStart(newQuestion.Answers);
 
+					/*if (newQuestion.Category == EQuestionCategory::EQC_WHOS_MISSING)
+					{
+						TArray<FString> matchAndPlayers;
+						parsedData[0].ParseIntoArray(matchAndPlayers, TEXT("Lineups"), true);
+						newQuestion.Question = matchAndPlayers[0];
+						matchAndPlayers[1].ParseIntoArray(m_WhosMissingPlayers, TEXT("_"), true);
+					}
+					else*/
+					{
+						newQuestion.Question = SeperateQuestionIntoLines(parsedData[0], maxCharacters, separateSymbol);
+					}
+					RemoveSpacesFromStart(newQuestion.Answers);
 					m_QuizballQuestions.Add(newQuestion);
 				}
 				else
@@ -201,8 +211,6 @@ char AQuizballQuestion::SetSeperateSymbol(const EQuestionCategory& category)
 {
 	if (category == EQuestionCategory::EQC_MANAGERID || category == EQuestionCategory::EQC_PLAYERID)
 		return '>';
-	else if (category == EQuestionCategory::EQC_WHOS_MISSING)
-		return '_';
 	else
 		return ' ';
 }
@@ -293,6 +301,18 @@ void AQuizballQuestion::SelectRandomQuestions()
 	}
 
 	m_SelectedQuestions = selectedQuestions;
+}
+
+FString AQuizballQuestion::GetPlayerPosition(const FString& player)
+{
+	int32 OpenIndex, CloseIndex;
+
+	if (player.FindChar('(', OpenIndex) && player.FindChar(')', CloseIndex))
+	{
+		return player.Mid(OpenIndex + 1, CloseIndex - OpenIndex - 1);
+	}
+
+	return TEXT("Unknown");
 }
 
 void AQuizballQuestion::SetQuestionHelp(const EQuestionHelp& help)

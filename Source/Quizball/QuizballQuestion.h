@@ -155,6 +155,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void SelectRandomQuestions();
+
+	UFUNCTION(BLUEPRINTCALLABLE)
+	FString GetPlayerPosition(const FString& player);
 	
 	int32 SetMaxCharacters(const EQuestionCategory& category);
 	char SetSeperateSymbol(const EQuestionCategory& category);
@@ -193,4 +196,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Guess The Score", meta = (AllowPrivateAccess = "true"))
 	bool bCorrectScorers = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Who's Missing", meta = (AllowPrivateAccess = "true"))
+	TArray<FString> m_WhosMissingPlayers;
 };
