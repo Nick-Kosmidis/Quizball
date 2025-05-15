@@ -87,7 +87,7 @@ void AQuizballQuestion::LoadQuestion()
 						int32 maxCharacters = SetMaxCharacters(newQuestion.Category);
 						char separateSymbol = SetSeperateSymbol(newQuestion.Category);
 
-						if (newQuestion.Category == EQuestionCategory::EQC_PLAYERID)
+						if (newQuestion.Category == EQuestionCategory::EQC_PLAYERID || newQuestion.Category == EQuestionCategory::EQC_MANAGERID)
 						{
 							FString cleanedQuestion = parsedData[0];
 							cleanedQuestion = CleanSeparators(cleanedQuestion, separateSymbol);
