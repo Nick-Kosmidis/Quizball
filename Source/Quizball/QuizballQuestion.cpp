@@ -78,19 +78,26 @@ void AQuizballQuestion::LoadQuestion()
 					newQuestion.Answer50_50 = parsedData[5];
 					newQuestion.isPlayed = false;
 
-					int32 maxCharacters = SetMaxCharacters(newQuestion.Category);
-					char separateSymbol = SetSeperateSymbol(newQuestion.Category);
-
-					/*if (newQuestion.Category == EQuestionCategory::EQC_WHOS_MISSING)
+					if (newQuestion.Category == EQuestionCategory::EQC_WHOS_MISSING)
 					{
-						TArray<FString> matchAndPlayers;
-						parsedData[0].ParseIntoArray(matchAndPlayers, TEXT("Lineups"), true);
-						newQuestion.Question = matchAndPlayers[0];
-						matchAndPlayers[1].ParseIntoArray(m_WhosMissingPlayers, TEXT("_"), true);
+						newQuestion.Question = parsedData[0].TrimStartAndEnd();
 					}
-					else*/
+					else
 					{
-						newQuestion.Question = SeperateQuestionIntoLines(parsedData[0], maxCharacters, separateSymbol);
+						int32 maxCharacters = SetMaxCharacters(newQuestion.Category);
+						char separateSymbol = SetSeperateSymbol(newQuestion.Category);
+
+						if (newQuestion.Category == EQuestionCategory::EQC_PLAYERID)
+						{
+							FString cleanedQuestion = parsedData[0];
+							cleanedQuestion = CleanSeparators(cleanedQuestion, separateSymbol);
+							newQuestion.Question = SeperateQuestionIntoLines(cleanedQuestion, maxCharacters, separateSymbol);
+						}
+						else
+						{
+							newQuestion.Question = SeperateQuestionIntoLines(parsedData[0], maxCharacters, separateSymbol);
+						}
+
 					}
 					RemoveSpacesFromStart(newQuestion.Answers);
 					m_QuizballQuestions.Add(newQuestion);
@@ -123,6 +130,14 @@ void AQuizballQuestion::SetCurrentQuestion(const EQuestionCategory& category, co
 	{
 		if (question.Category == category && question.Difficulty == difficulty && !question.isPlayed)
 		{
+			if (question.Category == EQuestionCategory::EQC_WHOS_MISSING)
+			{
+				TArray<FString> matchAndScore;
+				question.Question.ParseIntoArray(matchAndScore, TEXT("Lineups:"));
+
+				question.Question = matchAndScore[0].TrimStartAndEnd();
+				m_WhosMissingPlayers = matchAndScore[1].TrimStartAndEnd();
+			}
 			m_CurrentQuestion = question;
 			question.isPlayed = true;
 			break;
@@ -540,6 +555,26 @@ int32 AQuizballQuestion::FindAnswerByIndex(const FString& answer)
 		}
 	}
 	return -1;
+}
+
+FString AQuizballQuestion::CleanSeparators(const FString& input, const char& separator)
+{
+	TArray<FString> parts;
+	FString cleaned;
+
+	input.ParseIntoArray(parts, *FString::Chr(separator), true);
+
+	for (int32 i = 0; i < parts.Num(); i++)
+	{
+		cleaned.Append(parts[i].TrimStartAndEnd());
+
+		if (i < parts.Num() - 1)
+		{
+			cleaned.AppendChar(separator);
+		}
+	}
+
+	return cleaned;
 }
 
 void AQuizballQuestion::ResetTop5Properties()

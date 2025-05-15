@@ -168,6 +168,7 @@ protected:
 	FString SeperateQuestionIntoLines(const FString& question, const int32 maxCharactersALine, const char& seperateSymbol);
 	void RemoveSpacesFromStart(TArray<FString>& answers);
 	int32 FindAnswerByIndex(const FString& answer);
+	FString CleanSeparators(const FString& input, const char& separator);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -198,5 +199,5 @@ private:
 	bool bCorrectScorers = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Who's Missing", meta = (AllowPrivateAccess = "true"))
-	TArray<FString> m_WhosMissingPlayers;
+	FString m_WhosMissingPlayers;
 };
