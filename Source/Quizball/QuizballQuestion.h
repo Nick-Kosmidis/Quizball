@@ -98,6 +98,7 @@ struct FQuizballQuestionData
 	}
 };
 
+USTRUCT(BlueprintType)
 struct FIDInfo
 {
 	GENERATED_BODY()
@@ -166,9 +167,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SelectRandomQuestions();
 
-	UFUNCTION(BLUEPRINTCALLABLE)
+	UFUNCTION(BlueprintCallable)
 	FString GetPlayerPosition(const FString& player);
 
+	UFUNCTION(BlueprintCallable)
 	FIDInfo GetIDInfo(const FString& question);
 	
 	int32 SetMaxCharacters(const EQuestionCategory& category);
