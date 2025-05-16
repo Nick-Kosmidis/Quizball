@@ -89,9 +89,7 @@ void AQuizballQuestion::LoadQuestion()
 
 						if (newQuestion.Category == EQuestionCategory::EQC_PLAYERID || newQuestion.Category == EQuestionCategory::EQC_MANAGERID)
 						{
-							FString cleanedQuestion = parsedData[0];
-							cleanedQuestion = CleanSeparators(cleanedQuestion, separateSymbol);
-							newQuestion.Question = SeperateQuestionIntoLines(cleanedQuestion, maxCharacters, separateSymbol);
+							newQuestion.Question = parsedData[0];
 						}
 						else
 						{
@@ -246,7 +244,6 @@ void AQuizballQuestion::SelectRandomQuestions()
 	TArray<FQuizballQuestionData> selectedQuestions;
 	TSet<FString> alreadySelectedQuestions;
 
-	// Λίστα με όλες τις απαιτήσεις ανά κατηγορία και δυσκολία
 	struct FSelectionCriteria
 	{
 		EQuestionCategory Category;
@@ -291,11 +288,6 @@ void AQuizballQuestion::SelectRandomQuestions()
 			}
 		}
 
-		/*FilteredQuestions.Sort([](const FQuizballQuestionData&, const FQuizballQuestionData&)
-		{
-			return FMath::RandBool(); // Random sort
-		});*/
-
 		Algo::RandomShuffle(FilteredQuestions);
 
 		for (int32 i = 0; i < criterion.Count && i < FilteredQuestions.Num(); i++)
@@ -328,6 +320,35 @@ FString AQuizballQuestion::GetPlayerPosition(const FString& player)
 	}
 
 	return TEXT("Unknown");
+}
+
+FIDInfo AQuizballQuestion::GetIDInfo(const FString& question)
+{
+	TArray<FString> infos, teams, periods;
+	FIDInfo playerBiography;
+	question.ParseIntoArray(infos, TEXT(">"), true);
+
+	for (const FString& info : infos)
+	{
+		FString trimmedInfo = info.TrimStartAndEnd();
+		int32 seperatorIndex;
+		if (trimmedInfo.FindChar(' ', seperatorIndex))
+		{
+			FString period = trimmedInfo.Left(seperatorIndex);
+			FString team = trimmedInfo.Mid(seperatorIndex + 1);
+
+			teams.Add(team);
+			periods.Add(period);
+		}
+	}
+
+	for (size_t i = 0; i < teams.Num(); i++)
+	{
+		playerBiography.Teams.Append(teams[i] + "\n");
+		playerBiography.Periods.Append(periods[i] + "\n");
+	}
+
+	return playerBiography;
 }
 
 void AQuizballQuestion::SetQuestionHelp(const EQuestionHelp& help)

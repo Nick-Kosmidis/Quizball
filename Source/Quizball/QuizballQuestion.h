@@ -98,6 +98,16 @@ struct FQuizballQuestionData
 	}
 };
 
+struct FIDInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Teams;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Periods;
+};
 
 UCLASS()
 class QUIZBALL_API AQuizballQuestion : public AActor
@@ -158,6 +168,8 @@ public:
 
 	UFUNCTION(BLUEPRINTCALLABLE)
 	FString GetPlayerPosition(const FString& player);
+
+	FIDInfo GetIDInfo(const FString& question);
 	
 	int32 SetMaxCharacters(const EQuestionCategory& category);
 	char SetSeperateSymbol(const EQuestionCategory& category);
