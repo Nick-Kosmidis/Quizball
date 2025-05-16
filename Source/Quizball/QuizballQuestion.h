@@ -98,6 +98,18 @@ struct FQuizballQuestionData
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FIDTeamsAndPeriods 
+{ 
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Teams; 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Periods; 
+};
+
 
 UCLASS()
 class QUIZBALL_API AQuizballQuestion : public AActor
@@ -156,12 +168,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SelectRandomQuestions();
 
-	UFUNCTION(BLUEPRINTCALLABLE)
+	UFUNCTION(BlueprintCallable)
 	FString GetPlayerPosition(const FString& player);
+
+	UFUNCTION(BlueprintCallable)
+	FIDTeamsAndPeriods GetTeamsAndPeriods(const FString& question);
 	
 	int32 SetMaxCharacters(const EQuestionCategory& category);
 	char SetSeperateSymbol(const EQuestionCategory& category);
 	void RemoveCharacter(FString& question, const char& seperateCharacter);
+	 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

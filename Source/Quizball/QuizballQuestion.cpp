@@ -89,9 +89,7 @@ void AQuizballQuestion::LoadQuestion()
 
 						if (newQuestion.Category == EQuestionCategory::EQC_PLAYERID || newQuestion.Category == EQuestionCategory::EQC_MANAGERID)
 						{
-							FString cleanedQuestion = parsedData[0];
-							cleanedQuestion = CleanSeparators(cleanedQuestion, separateSymbol);
-							newQuestion.Question = SeperateQuestionIntoLines(cleanedQuestion, maxCharacters, separateSymbol);
+							newQuestion.Question = parsedData[0].TrimStartAndEnd();
 						}
 						else
 						{
@@ -291,11 +289,6 @@ void AQuizballQuestion::SelectRandomQuestions()
 			}
 		}
 
-		/*FilteredQuestions.Sort([](const FQuizballQuestionData&, const FQuizballQuestionData&)
-		{
-			return FMath::RandBool(); // Random sort
-		});*/
-
 		Algo::RandomShuffle(FilteredQuestions);
 
 		for (int32 i = 0; i < criterion.Count && i < FilteredQuestions.Num(); i++)
@@ -328,6 +321,39 @@ FString AQuizballQuestion::GetPlayerPosition(const FString& player)
 	}
 
 	return TEXT("Unknown");
+}
+
+FIDTeamsAndPeriods AQuizballQuestion::GetTeamsAndPeriods(const FString& question)
+{
+	TArray<FString> playerBiography;
+	TArray<FString> teams;
+	TArray<FString> periods;
+	FIDTeamsAndPeriods teamsAndPeriors;
+
+	question.ParseIntoArray(playerBiography, TEXT(">"), true);
+
+	for (const FString& biography : playerBiography)
+	{
+		FString trimmed = biography.TrimStartAndEnd();
+		int32 spaceIndex;
+
+		if (trimmed.FindChar(' ', spaceIndex))
+		{
+			FString period = trimmed.Left(spaceIndex);
+			FString team = trimmed.Mid(spaceIndex + 1);
+
+			teams.Add(team);
+			periods.Add(period);
+		}
+	}
+
+	for (size_t i = 0; i < teams.Num(); i++)
+	{
+		teamsAndPeriors.Teams.Append(teams[i] + "\n");
+		teamsAndPeriors.Periods.Append(periods[i] + "\n");
+	}
+
+	return teamsAndPeriors;
 }
 
 void AQuizballQuestion::SetQuestionHelp(const EQuestionHelp& help)
