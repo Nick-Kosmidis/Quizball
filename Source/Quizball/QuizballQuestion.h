@@ -186,7 +186,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Question", meta = (AllowPrivateAccess = "true"))
 	TArray<FQuizballQuestionData> m_QuizballQuestions;
