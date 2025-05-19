@@ -6,6 +6,15 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerPawn.generated.h"
 
+UENUM(BlueprintType)
+enum class EPlayerLocation : uint8
+{
+	EPL_NONE UMETA(DisplayName = "None"),
+	EPL_MAIN_MENU UMETA(DisplayName = "Main Menu"),
+	EPL_IN_QUESTION UMETA(DisplayName = "In question"),
+
+	EPL_MAX UMETA(DisplayName = "Max")
+};
 
 USTRUCT(BlueprintType)
 struct FPlayerProperties
@@ -24,8 +33,11 @@ struct FPlayerProperties
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool UseDoublePoints;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EPlayerLocation PlayerLocation;
+
 	FPlayerProperties()
-		:Name(TEXT("")), Points(0), Use50_50(false), UseDoublePoints(false)
+		:Name(TEXT("")), Points(0), Use50_50(false), UseDoublePoints(false), PlayerLocation(EPlayerLocation::EPL_MAIN_MENU)
 	{
 
 	}

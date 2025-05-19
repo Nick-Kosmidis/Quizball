@@ -47,6 +47,11 @@ void AQuizballQuestion::LoadQuestion()
 						parsedData[3].ParseIntoArray(newQuestion.Answers, TEXT("-"), true);
 						newQuestion.Tries = true;
 					}
+					else if (newQuestion.Category == EQuestionCategory::EQC_CLUB_COMBO)
+					{
+						parsedData[3].ParseIntoArray(newQuestion.Answers, TEXT("&"), true);
+						newQuestion.Tries = false;
+					}
 					else if (newQuestion.Category == EQuestionCategory::EQC_GUESS_THE_SCORE)
 					{
 						TArray<FString> scoreAndScorers;
@@ -272,6 +277,10 @@ void AQuizballQuestion::SelectRandomQuestions()
 		{EQuestionCategory::EQC_MANAGERID, EQuestionDifficulty::EQD_EASY, 2},
 
 		{EQuestionCategory::EQC_GUESS_THE_SCORE, EQuestionDifficulty::EQD_EASY, 2},
+
+		{EQuestionCategory::EQC_HIGHER_LOWER, EQuestionDifficulty::EQD_EASY, 2}, 
+
+		{EQuestionCategory::EQC_CLUB_COMBO, EQuestionDifficulty::EQD_EASY, 2}
 	};
 
 	for (const FSelectionCriteria& criterion : criteria)
