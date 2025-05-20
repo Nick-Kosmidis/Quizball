@@ -360,6 +360,50 @@ FIDInfo AQuizballQuestion::GetIDInfo(const FString& question)
 	return playerBiography;
 }
 
+FString AQuizballQuestion::RevealAnswer()
+{
+	if (m_CurrentQuestion.Category != EQuestionCategory::EQC_CLUB_COMBO)
+	{
+		return m_CurrentQuestion.Answers[0];
+	}
+	else
+	{
+		FString clubComboPlayers;
+		if (m_CurrentQuestion.Answers.Num() >= 5)
+		{
+			for (int32 i = 0; i < m_CurrentQuestion.Answers.Num(); ++i)
+			{
+				if (i == m_CurrentQuestion.Answers.Num() / 2)
+				{
+					clubComboPlayers.AppendChar('\n');
+				}
+
+				clubComboPlayers.Append(m_CurrentQuestion.Answers[i].TrimStartAndEnd());
+
+				if (i < m_CurrentQuestion.Answers.Num() - 1)
+				{
+					clubComboPlayers.Append(", ");
+				}
+			}
+
+		}
+		else
+		{
+			for (int32 i = 0; i < m_CurrentQuestion.Answers.Num(); ++i)
+			{
+
+				clubComboPlayers.Append(m_CurrentQuestion.Answers[i].TrimStartAndEnd());
+
+				if (i < m_CurrentQuestion.Answers.Num() - 1)
+				{
+					clubComboPlayers.Append(", ");
+				}
+			}
+		}
+		return "Players: " + clubComboPlayers;
+	}
+}
+
 void AQuizballQuestion::SetQuestionHelp(const EQuestionHelp& help)
 {
 	m_CurrentQuestion.Help = help;

@@ -172,6 +172,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FIDInfo GetIDInfo(const FString& question);
+
+	UFUNCTION(BlueprintCallable)
+	FString RevealAnswer();
 	
 	int32 SetMaxCharacters(const EQuestionCategory& category);
 	char SetSeperateSymbol(const EQuestionCategory& category);
