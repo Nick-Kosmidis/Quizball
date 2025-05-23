@@ -454,9 +454,9 @@ int AQuizballQuestion::CalculatePoints()
 			switch (m_CurrentQuestion.Help)
 			{
 			case EQuestionHelp::EQH_NONE:
-				return 2;
+				return 1;
 			case EQuestionHelp::EQH_DOUBLE_POINTS:
-				return 4;
+				return 2;
 			default:
 				return -1;
 			}
