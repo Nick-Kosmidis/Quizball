@@ -491,7 +491,7 @@ int AQuizballQuestion::CalculateGuessTheScorePoints(bool correctScore, bool corr
 
 bool AQuizballQuestion::CheckGameEnd()
 {
-	for (const auto& question : m_QuizballQuestions)
+	for (const auto& question : m_SelectedQuestions)
 	{
 		if (!question.isPlayed)
 			return false;
