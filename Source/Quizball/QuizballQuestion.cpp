@@ -491,12 +491,19 @@ int AQuizballQuestion::CalculateGuessTheScorePoints(bool correctScore, bool corr
 
 bool AQuizballQuestion::CheckGameEnd()
 {
+	size_t playedQuestions = 0U;
 	for (const auto& question : m_SelectedQuestions)
 	{
-		if (!question.isPlayed)
-			return false;
+		if (question.isPlayed)
+			playedQuestions++;
 	}
-	return true;
+	
+	if (playedQuestions == m_SelectedQuestions.Num() - 2)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 void AQuizballQuestion::HandleQuestions(const FString& answer)
