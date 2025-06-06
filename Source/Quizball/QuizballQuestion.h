@@ -175,6 +175,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString RevealAnswer();
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FString> SeperateHigherLower();
 	
 	int32 SetMaxCharacters(const EQuestionCategory& category);
 	char SetSeperateSymbol(const EQuestionCategory& category);
@@ -186,6 +189,7 @@ protected:
 	void RemoveSpacesFromStart(TArray<FString>& answers);
 	int32 FindAnswerByIndex(const FString& answer);
 	FString CleanSeparators(const FString& input, const char& separator);
+	FString GetLogoPath(const FQuizballQuestionData& question);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
