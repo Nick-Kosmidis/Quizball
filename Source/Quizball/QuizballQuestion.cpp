@@ -175,10 +175,10 @@ bool AQuizballQuestion::CheckAnswer(const FString& answer)
 		return false;
 	}
 
-	if (m_CurrentQuestion.Category == EQuestionCategory::EQC_HIGHER_LOWER)
+	/*if (m_CurrentQuestion.Category == EQuestionCategory::EQC_HIGHER_LOWER)
 	{
 		return true;
-	}
+	}*/
 
 	for (const FString& correctAnswer : m_CurrentQuestion.Answers)
 	{
