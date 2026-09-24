@@ -46,7 +46,7 @@ The game features a rich variety of fixed and dynamic categories:
 You can download the latest version of Quizball below:
 
 * **PC (Windows):** [Download Quizball for PC (.zip)](https://drive.google.com/file/d/16L0sv01mEnwpUirFUOLYaMGtdCi7H-Ng/view?usp=sharing)
-* **Mobile (Android):** [Download Quizball for Android (.apk)](https://drive.google.com/file/d/16KaCJh00BiVBKd58oeSgaqOvIJs2-6Hj/view?usp=sharing)
+* **Mobile (Android):** [Download Quizball for Android (.apk)](https://drive.google.com/file/d/1pZelxhICU7-uWsjzIzO3iiN2SgqDIBY8/view?usp=sharing)
 
 ---
 
