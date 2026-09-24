@@ -225,21 +225,28 @@ bool AQuizballQuestion::CheckGuessAnswer(const FString& answer1, const FString& 
 	}
 	playerScorers.Sort();
 
+	// Check if all correct scorers are guessed
+	bCorrectScorers = (correctScorers.Num() > 0) && (correctScorers.Num() == playerScorers.Num());
 
-	for (FString& scorer : playerScorers)
+	if (bCorrectScorers)
 	{
-		bool scorerFound = false;
-		for (FString& correctScorer : correctScorers)
+		for (FString& scorer : playerScorers)
 		{
-			if (correctScorer.Contains(scorer) || scorer.Contains(correctScorer))
+			bool scorerFound = false;
+			for (FString& correctScorer : correctScorers)
 			{
-				scorerFound = true;
+				if (correctScorer.Contains(scorer) || scorer.Contains(correctScorer))
+				{
+					scorerFound = true;
+					break;
+				}
+			}
+			if (!scorerFound)
+			{
+				bCorrectScorers = false;
+				break;
 			}
 		}
-		if (scorerFound)
-			bCorrectScorers = true;
-		else
-			bCorrectScorers = false;
 	}
 
 	return bCorrectScore || bCorrectScorers;
