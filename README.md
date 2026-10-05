@@ -1,6 +1,6 @@
 # Quizball
 
-**Quizball** is an interactive football trivia game developed in **Unreal Engine**. It is designed for endless fun whether you are playing solo, challenging a friend in a 1v1 match, or teaming up with groups for an ultimate football quiz night!
+**Quizball** is an interactive football trivia game developed in **Unreal Engine**, inspired by the Greek Youtuber Aimilios. It is designed for endless fun whether you are playing solo, challenging a friend in a 1v1 match, or teaming up with groups for an ultimate football quiz night!
 
 The game is available for both **PC (Windows)** and **Android** mobile devices.
 
