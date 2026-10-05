@@ -180,23 +180,42 @@ bool AQuizballQuestion::CheckAnswer(const FString& answer)
 		return true;
 	}*/
 
+	// Lambda to normalize string: lowercase and remove spaces
+	auto NormalizeString = [](const FString& str) -> FString
+	{
+		FString result = str.ToLower();
+		result.ReplaceInline(TEXT(" "), TEXT(""));
+		return result;
+	};
+
+	// Normalize player answer
+	FString normalizedPlayerAnswer = NormalizeString(answer);
+
 	for (const FString& correctAnswer : m_CurrentQuestion.Answers)
 	{
-		int seperatorIndex;
+		// Normalize full answer and check
+		FString normalizedFullAnswer = NormalizeString(correctAnswer);
 
+		if (normalizedPlayerAnswer == normalizedFullAnswer)
+		{
+			return true;
+		}
+
+		// Then check individual parts (for backwards compatibility)
+		int seperatorIndex;
 		if (correctAnswer.FindChar(' ', seperatorIndex))
 		{
 			FString name = correctAnswer.Left(seperatorIndex);
-			FString surname = correctAnswer.Mid(seperatorIndex+1);
+			FString surname = correctAnswer.Mid(seperatorIndex + 1);
 
-			if (answer == name || answer == surname || answer == correctAnswer)
+			// Normalize each part
+			FString normalizedName = NormalizeString(name);
+			FString normalizedSurname = NormalizeString(surname);
+
+			if (normalizedPlayerAnswer == normalizedName || normalizedPlayerAnswer == normalizedSurname)
 			{
 				return true;
 			}
-		}
-		else if (answer == correctAnswer)
-		{
-			return true;
 		}
 	}
 
